@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30501.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Paprika.Net", "Paprika.Net\Paprika.Net.csproj", "{AA04ACA0-7A12-4099-ABC1-0355228F4E23}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Paprika.Net.Console", "Paprika.Net.Console\Paprika.Net.Console.csproj", "{BA4E974B-365B-4DFF-92AC-AF35152ED85A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AA04ACA0-7A12-4099-ABC1-0355228F4E23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA04ACA0-7A12-4099-ABC1-0355228F4E23}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA04ACA0-7A12-4099-ABC1-0355228F4E23}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA04ACA0-7A12-4099-ABC1-0355228F4E23}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA4E974B-365B-4DFF-92AC-AF35152ED85A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA4E974B-365B-4DFF-92AC-AF35152ED85A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA4E974B-365B-4DFF-92AC-AF35152ED85A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA4E974B-365B-4DFF-92AC-AF35152ED85A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
