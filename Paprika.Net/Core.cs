@@ -8,8 +8,10 @@ namespace Paprika.Net
     public class Core
     {
         private const string GRAMMAR_MANIFEST = "index.grammar";
-        private string _rootDirectory = "C:\\Users\\Ste\\SkyDrive\\Documents\\Web\\host\\paprika\\";
 
+        //the directory with the index.grammar file in it
+        private string _rootDirectory = "../../../paprika-grammar/";
+        
         private Random randomiser;
 
         private Dictionary<string, List<string>> _grammar;
