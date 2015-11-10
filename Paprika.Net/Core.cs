@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 
@@ -31,6 +32,11 @@ namespace Paprika.Net
         public Core()
         {
             if (Debugger.IsAttached) { Console.WriteLine("Loading grammar..."); }
+
+            if (ConfigurationManager.AppSettings["GrammarRoot"] != null)
+            {
+                _rootDirectory = ConfigurationManager.AppSettings["GrammarRoot"].ToString();
+            }
 
             try
             {
