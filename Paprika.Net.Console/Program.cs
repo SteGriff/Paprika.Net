@@ -13,7 +13,7 @@ namespace Paprika.Net.Console
         {
             var engine = new Core();
 
-            while(true)
+            while (true)
             {
                 Con.Write("> ");
                 string input = Con.ReadLine();
@@ -24,15 +24,15 @@ namespace Paprika.Net.Console
                 }
                 catch (BracketResolutionException ex)
                 {
-                    Con.WriteLine(ex.Message);
+                    Con.WriteLine("{0} in [{1}]", ex.Message, ex.Category);
                 }
                 catch (InputException ex)
                 {
                     Con.WriteLine(ex.Message);
                 }
-                
+
             }
-            
+
         }
 
         static void TestGrammar(Core engine)
