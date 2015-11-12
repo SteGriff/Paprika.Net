@@ -17,6 +17,28 @@ namespace Paprika.Net.Console
             {
                 Con.Write("> ");
                 string input = Con.ReadLine();
+
+                //Skip back to input if nothing was entered
+                if (String.IsNullOrWhiteSpace(input))
+                {
+                    continue;
+                }
+
+                //Check for commands starting '//'
+                if (input.Length > 1 && input.Substring(0, 2) == "//")
+                {
+                    string command = input.Replace("//", "");
+                    switch (command)
+                    {
+                        case "reload":
+                            Con.WriteLine("Reloading...");
+                            engine = new Core();
+                            Con.WriteLine("Done");
+                            continue;
+                    }
+                }
+
+                //Do the actual parsing
                 try
                 {
                     string output = engine.Parse(input);
@@ -25,6 +47,10 @@ namespace Paprika.Net.Console
                 catch (BracketResolutionException ex)
                 {
                     Con.WriteLine("{0} in [{1}]", ex.Message, ex.Category);
+                }
+                catch (FormatException ex)
+                {
+                    Con.WriteLine(ex.Message);
                 }
                 catch (InputException ex)
                 {

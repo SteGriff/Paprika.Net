@@ -288,7 +288,7 @@ namespace Paprika.Net
             int nestingPosition = innerExpression.IndexOfAny(new char[] { '[', ']' });
             if (nestingPosition > -1)
             {
-                throw new FormatException("Nested brackets at col." + nestingPosition);
+                throw new FormatException("Nested brackets at col." + nestingPosition + ": \"" + expression + "\"");
             }
 
             // Handle a label inside the tag like [sport#1] (remove the label)
