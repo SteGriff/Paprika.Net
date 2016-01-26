@@ -53,7 +53,7 @@ namespace Paprika.Net
         public void LoadConfiguredManifest()
         {
             if (Debugger.IsAttached) { Console.WriteLine("Loading grammar..."); }
-
+            
             if (ConfigurationManager.AppSettings["GrammarRoot"] != null)
             {
                 _rootDirectory = ConfigurationManager.AppSettings["GrammarRoot"].ToString();
