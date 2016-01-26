@@ -13,6 +13,15 @@ namespace Paprika.Net.Console
         {
             var engine = new Core();
 
+            try
+            {
+                engine.LoadConfiguredManifest();
+            }
+            catch (GrammarLoadingException ex)
+            {
+                Con.WriteLine(ex.Message);
+            }
+
             while (true)
             {
                 Con.Write("> ");

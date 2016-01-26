@@ -31,25 +31,59 @@ namespace Paprika.Net
 
         public Core()
         {
+            CommonInitialisation();
+        }
+
+        /// <summary>
+        /// Load the specified dictionary as the grammar
+        /// (Overwrites any existing grammar)
+        /// </summary>
+        public void LoadThisGrammar(Dictionary<string, List<string>> grammar)
+        {
+            foreach (var cat in grammar)
+            {
+                CommitCategory(cat.Key, cat.Value);
+            }
+        }
+
+        /// <summary>
+        /// Load the grammars from the root directory specified by the GrammarRoot key in AppSettings
+        /// (Overwrites any existing grammar)
+        /// </summary>
+        public void LoadConfiguredManifest()
+        {
             if (Debugger.IsAttached) { Console.WriteLine("Loading grammar..."); }
 
             if (ConfigurationManager.AppSettings["GrammarRoot"] != null)
             {
                 _rootDirectory = ConfigurationManager.AppSettings["GrammarRoot"].ToString();
-            }
-
-            try
-            {
                 PopulateGrammarFromManifest();
             }
-            catch (Exception ex)
+            else
             {
-                Console.WriteLine(ex.Message);
+                throw new GrammarLoadingException("No manifest configured! Create an AppSetting for <GrammarRoot> which specifies the directory where your index.grammar file is stored.");
             }
-            
 
             if (Debugger.IsAttached) { Console.WriteLine("... Done"); }
+        }
 
+        /// <summary>
+        /// Load the grammars using the specified rootDirectory which contains an index.grammar file
+        /// (Overwrites any existing grammar)
+        /// </summary>
+        /// <param name="rootDirectory">A directory containing an index.grammar file</param>
+        public void LoadManifest(string rootDirectory)
+        {
+            if (Debugger.IsAttached) { Console.WriteLine("Loading grammar..."); }
+
+            _rootDirectory = rootDirectory;
+            PopulateGrammarFromManifest();
+
+            if (Debugger.IsAttached) { Console.WriteLine("... Done"); }
+        }
+
+        private void CommonInitialisation()
+        {
             randomiser = new Random();
         }
 
@@ -62,7 +96,7 @@ namespace Paprika.Net
         {
             if (!File.Exists(FileName(GRAMMAR_MANIFEST)))
             {
-                throw new ApplicationException("Grammar manifest index.grammar not found");
+                throw new GrammarLoadingException("Grammar manifest index.grammar not found");
             }
 
             var manifest = File.ReadAllLines(FileName(GRAMMAR_MANIFEST));
@@ -77,7 +111,7 @@ namespace Paprika.Net
 
                 if (!File.Exists(FileName(thisFile)))
                 {
-                    throw new ApplicationException("Can't find linked grammar file, " + thisFile);
+                    throw new GrammarLoadingException("Can't find linked grammar file, " + thisFile);
                 }
 
                 LoadGrammar(thisFile);
@@ -118,7 +152,7 @@ namespace Paprika.Net
                         }
                         catch (Exception ex)
                         {
-                            throw new ApplicationException(String.Format("Error [in {0}] ({1}): {2}", fileName, category, ex.Message));
+                            throw new GrammarLoadingException(String.Format("Error [in {0}] ({1}): {2}", fileName, category, ex.Message));
                         }
 
                     }
@@ -252,7 +286,16 @@ namespace Paprika.Net
             // All [expressions] replaced
 
             // Replace all the a/an words which have been marked with Chr(254)-Chr(255)
-            open = query.IndexOf('þ');
+            query = FixAAndAn(query);
+
+            // Query is all fixed up; return it!
+            return query;
+
+        }
+
+        private string FixAAndAn(string query)
+        {
+            int open = query.IndexOf('þ'); 
             while (open > -1)
             {
                 int close = query.IndexOf('ÿ');
@@ -269,9 +312,7 @@ namespace Paprika.Net
                 open = query.IndexOf('þ');
             }
 
-            // Query is all fixed up; return it!
             return query;
-
         }
 
         private bool IsVowel(string c)
