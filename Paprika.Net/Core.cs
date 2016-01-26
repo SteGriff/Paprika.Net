@@ -9,10 +9,12 @@ namespace Paprika.Net
     public class Core
     {
         private const string GRAMMAR_MANIFEST = "index.grammar";
-
+        private const string ARTICLE_OPEN = "{{$AAN${{";
+        private const string ARTICLE_CLOSE = "}}$AAN$}}";
+        
         //the directory with the index.grammar file in it
         private string _rootDirectory = "../../../paprika-grammar/";
-        
+
         private Random randomiser;
 
         private Dictionary<string, List<string>> _grammar;
@@ -53,7 +55,7 @@ namespace Paprika.Net
         public void LoadConfiguredManifest()
         {
             if (Debugger.IsAttached) { Console.WriteLine("Loading grammar..."); }
-            
+
             if (ConfigurationManager.AppSettings["GrammarRoot"] != null)
             {
                 _rootDirectory = ConfigurationManager.AppSettings["GrammarRoot"].ToString();
@@ -85,6 +87,12 @@ namespace Paprika.Net
         private void CommonInitialisation()
         {
             randomiser = new Random();
+
+            if (ARTICLE_OPEN.Length != ARTICLE_CLOSE.Length)
+            {
+                throw new CoreDeveloperException("ARTICLE_OPEN and _CLOSE constants MUST be the same length");
+            }
+
         }
 
         private string FileName(string fileName)
@@ -285,7 +293,7 @@ namespace Paprika.Net
 
             // All [expressions] replaced
 
-            // Replace all the a/an words which have been marked with Chr(254)-Chr(255)
+            // Replace all the a/an words which have been marked
             query = FixAAndAn(query);
 
             // Query is all fixed up; return it!
@@ -295,21 +303,29 @@ namespace Paprika.Net
 
         private string FixAAndAn(string query)
         {
-            int open = query.IndexOf('þ'); 
+            int len = ARTICLE_OPEN.Length;
+
+            int open = query.IndexOf(ARTICLE_OPEN);
             while (open > -1)
             {
-                int close = query.IndexOf('ÿ');
+                int close = query.IndexOf(ARTICLE_CLOSE);
                 if (close < 0)
                 {
-                    throw new ApplicationException("Bad a/an matching, developer messed up");
+                    throw new CoreDeveloperException("No matching ARTICLE_CLOSE found for an _OPEN");
                 }
-                string expression = query.Substring(open, close + 1 - open);
-                char nextChar = query.Substring(close + 1).TrimStart()[0];
+                string expression = query.Substring(open, close + len - open);
+                char nextChar = query.Substring(close + len).TrimStart()[0];
                 string resolution = IsVowel(nextChar.ToString())
                     ? "an"
                     : "a";
-                query = query.Replace(expression, resolution);
-                open = query.IndexOf('þ');
+
+                //Slice and insert replacement
+                string beforeOpen = query.Substring(0, open);
+                string afterClose = query.Substring(close + len);
+                query = beforeOpen + resolution + afterClose;
+
+                //Get next
+                open = query.IndexOf(ARTICLE_OPEN);
             }
 
             return query;
@@ -354,7 +370,7 @@ namespace Paprika.Net
             }
             else if (innerExpression == "a" || innerExpression == "an")
             {
-                return "þ" + innerExpression + "ÿ";
+                return ARTICLE_OPEN + innerExpression + ARTICLE_CLOSE;
             }
             else
             {

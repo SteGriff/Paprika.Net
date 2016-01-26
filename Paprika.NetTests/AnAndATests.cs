@@ -54,7 +54,7 @@ namespace Paprika.NetTests
         }
 
         [TestMethod()]
-        public void ADogAndAnOstrich()
+        public void MultipleATagsCanHaveDifferentResults()
         {
             string input = "[a] [dog/dog] and [a] [ostrich/ostrich]";
             string expected = "a dog and an ostrich";
