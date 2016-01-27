@@ -208,6 +208,11 @@ namespace Paprika.Net
 
         public string Parse(string query)
         {
+            return Parse(query, null);
+        }
+
+        public string Parse(string query, Dictionary<string, string> injectedValues)
+        {
             int open = query.IndexOf('[');
 
             // If we do a loop with no useful operation, nops increases
@@ -276,7 +281,7 @@ namespace Paprika.Net
 
                 if (!blank)
                 {
-                    resolution = ResolveBracket(expression);
+                    resolution = ResolveBracket(expression, injectedValues);
                 }
 
                 // Clean up double spaces (won't catch triple spaces)
@@ -336,7 +341,7 @@ namespace Paprika.Net
             return "aeiou".Contains(c);
         }
 
-        private string ResolveBracket(string expression)
+        private string ResolveBracket(string expression, Dictionary<string, string> injectedValues)
         {
             // Get expression without brackets []
             string innerExpression = expression.Substring(1, expression.Length - 2);
@@ -363,7 +368,11 @@ namespace Paprika.Net
                 return randomFrom(terms);
             }
 
-            if (Grammar.ContainsKey(innerExpression))
+            if (injectedValues != null && injectedValues.ContainsKey(innerExpression))
+            {
+                return injectedValues[innerExpression];
+            }
+            else if (Grammar.ContainsKey(innerExpression))
             {
                 var categoryTerms = Grammar[innerExpression].ToArray();
                 return randomFrom(categoryTerms);

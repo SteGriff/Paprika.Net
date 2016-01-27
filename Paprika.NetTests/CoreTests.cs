@@ -77,7 +77,7 @@ namespace Paprika.Net.Tests
         {
             var core = new Core();
             string input = "[dog/dog]";
-            
+
             string actual = core.Parse(input);
             string expected = "dog";
 
@@ -137,7 +137,7 @@ namespace Paprika.Net.Tests
 
             core.LoadThisGrammar(sampleDictionary);
             string input = "[animal] [animal]";
-            
+
             string actual = core.Parse(input);
 
             Assert.IsTrue(actual == "dog dog" || actual == "cat cat");
@@ -156,7 +156,7 @@ namespace Paprika.Net.Tests
             string input = "[animal#1] [animal#2]";
 
             bool gotOne = false;
-            for(int i = 0; i < 200; i++)
+            for (int i = 0; i < 200; i++)
             {
                 string actual = core.Parse(input);
                 if (actual == "dog cat" || actual == "cat dog")
@@ -168,5 +168,174 @@ namespace Paprika.Net.Tests
             Assert.IsTrue(gotOne);
         }
 
+
+        [TestMethod]
+        public void NestedTagEvaluates()
+        {
+            var core = new Core();
+            var sampleDictionary = new Dictionary<string, List<string>>
+            {
+                { "animal", new List<string> { "canine" } },
+                { "canine", new List<string> { "dog" } },
+            };
+
+            core.LoadThisGrammar(sampleDictionary);
+            string input = "One such [animal] is the [[animal]]";
+            string expected = "One such canine is the dog";
+            string actual = core.Parse(input);
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void HiddenTagDoesNotDisplay()
+        {
+            var core = new Core();
+            var sampleDictionary = new Dictionary<string, List<string>>
+            {
+                { "animal", new List<string> { "canine", "feline" } }
+            };
+
+            core.LoadThisGrammar(sampleDictionary);
+            string input = "[!animal]";
+            string expected = "";
+            string actual = core.Parse(input);
+            
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void HiddenTagPopulatesNestedInstance()
+        {
+            var core = new Core();
+            var sampleDictionary = new Dictionary<string, List<string>>
+            {
+                { "animal", new List<string> { "canine" } },
+                { "canine", new List<string> { "dog" } }
+            };
+
+            core.LoadThisGrammar(sampleDictionary);
+            string input = "[!animal][[animal]]";
+            string expected = "dog";
+            string actual = core.Parse(input);
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof (FormatException))]
+        public void NestedTagWithNoEarlyCallThrowsError()
+        {
+            var core = new Core();
+            var sampleDictionary = new Dictionary<string, List<string>>
+            {
+                { "animal", new List<string> { "canine" } },
+                { "canine", new List<string> { "dog" } }
+            };
+
+            core.LoadThisGrammar(sampleDictionary);
+            string input = "[[animal]]";
+            
+            //We expect a FormatException using the ExpectedException attribute
+            string actual = core.Parse(input);
+            
+        }
+
+        [TestMethod]
+        public void FairDistributionOfNestedTagResults()
+        {
+            var core = new Core();
+            var sampleDictionary = new Dictionary<string, List<string>>
+            {
+                { "animal", new List<string> { "canine", "feline" } },
+                { "canine", new List<string> { "dog", "wolf" } },
+                { "feline", new List<string> { "cat", "lion" } }
+            };
+
+            core.LoadThisGrammar(sampleDictionary);
+            string input = "[animal] [[animal]]";
+
+            int Dog = 0;
+            int Wolf = 0;
+            int Cat = 0;
+            int Lion = 0;
+            for (int i = 0; i < 1000; i++)
+            {
+                string actual = core.Parse(input);
+                if (actual == "canine dog")
+                {
+                    Dog++;
+                }
+                else if (actual == "canine wolf")
+                {
+                    Wolf++;
+                }
+                else if (actual == "feline cat")
+                {
+                    Cat++;
+                }
+                else if (actual == "feline lion")
+                {
+                    Lion++;
+                }
+                else
+                {
+                    Assert.Fail("Output did not come from dictionary: " + actual);
+                }
+            }
+
+            //Must produce all options a fair amount (1 in 100)
+            Assert.IsTrue(Dog > 10);
+            Assert.IsTrue(Wolf > 10);
+            Assert.IsTrue(Cat > 10);
+            Assert.IsTrue(Lion > 10);
+        }
+
+        [TestMethod]
+        public void InjectedValueUsedInsteadOfRandom()
+        {
+            var core = new Core();
+            var sampleDictionary = new Dictionary<string, List<string>>
+            {
+                { "letter", new List<string> { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" } },
+                { "word b", new List<string> { "banana" } }
+            };
+
+            core.LoadThisGrammar(sampleDictionary);
+
+            string input = "[!letter][word [letter]]";
+            var injection = new Dictionary<string, string> { { "letter", "b" } };
+
+            string expected = "banana";
+            string actual = core.Parse(input, injection);
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void MultipleInjectedValuesUsedInsteadOfRandom()
+        {
+            var core = new Core();
+            var sampleDictionary = new Dictionary<string, List<string>>
+            {
+                { "letter", new List<string> { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" } },
+                { "word b", new List<string> { "banana" } },
+                { "role", new List<string> { "fruit", "food", "meal", "sweet", "item", "snack", "gun", "prop" } },
+            };
+
+            core.LoadThisGrammar(sampleDictionary);
+
+            string input = "[!letter][word [letter]] [role]";
+
+            var injection = new Dictionary<string, string> {
+                { "letter", "b" },
+                { "role", "fruit" }
+            };
+
+            string expected = "banana fruit";
+            string actual = core.Parse(input, injection);
+
+            Assert.AreEqual(expected, actual);
+        }
     }
 }
