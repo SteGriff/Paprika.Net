@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,22 +10,19 @@ namespace Paprika.Net.Console
 {
     class Program
     {
+        static Core engine = new Core();
+        static RunModes mode = RunModes.ConfiguredManifest;
+        static string grammarSource = "";
+        static string prompt = "";
+
         static void Main(string[] args)
         {
-            var engine = new Core();
-
-            try
-            {
-                engine.LoadConfiguredManifest();
-            }
-            catch (GrammarLoadingException ex)
-            {
-                Con.WriteLine(ex.Message);
-            }
+            LoadConfigured();
 
             while (true)
             {
-                Con.Write("> ");
+                //Display prompt and get input
+                Con.Write( prompt );
                 string input = Con.ReadLine();
 
                 //Skip back to input if nothing was entered
@@ -36,13 +34,26 @@ namespace Paprika.Net.Console
                 //Check for commands starting '//'
                 if (input.Length > 1 && input.Substring(0, 2) == "//")
                 {
-                    string command = input.Replace("//", "");
-                    switch (command)
+                    //Parameterise the commands after the slashes
+                    var commands = input
+                        .Replace("//", "")
+                        .Split(new[] { ' ' });
+
+                    switch (commands[0])
                     {
+                        case "test":
+                            TestGrammar(engine);
+                            continue;
+
                         case "reload":
                             Con.WriteLine("Reloading...");
-                            engine = new Core();
+                            Reload();
                             Con.WriteLine("Done");
+                            continue;
+
+                        case "manifest":
+                            string target = commands[1];
+                            LoadSpecific(target);
                             continue;
                     }
                 }
@@ -82,6 +93,47 @@ namespace Paprika.Net.Console
                 }
             }
             Con.ReadLine();
+        }
+
+        static void LoadConfigured()
+        {
+            mode = RunModes.ConfiguredManifest;
+            prompt = ">";
+
+            Reload();
+        }
+
+        static void LoadSpecific(string grammar)
+        {
+            mode = RunModes.SpecifiedManifest;
+            grammarSource = grammar;
+            prompt = grammar.Split(Path.DirectorySeparatorChar).Last() + " >";
+
+            Reload();
+        }
+
+        static void Reload()
+        {
+            engine = new Core();
+
+            try
+            {
+                switch (mode)
+                {
+                    case RunModes.ConfiguredManifest:
+                        engine.LoadConfiguredManifest();
+                        break;
+
+                    case RunModes.SpecifiedManifest:
+                        engine.LoadManifest(grammarSource);
+                        break;
+                }
+            }
+            catch (GrammarLoadingException ex)
+            {
+                Con.WriteLine(ex.Message);
+            }
+
         }
     }
 }

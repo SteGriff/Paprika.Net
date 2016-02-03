@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 
 namespace Paprika.Net
 {
@@ -11,9 +12,9 @@ namespace Paprika.Net
         private const string GRAMMAR_MANIFEST = "index.grammar";
         private const string ARTICLE_OPEN = "{{$AAN${{";
         private const string ARTICLE_CLOSE = "}}$AAN$}}";
-        
+
         //the directory with the index.grammar file in it
-        private string _rootDirectory = "../../../paprika-grammar/";
+        private string _rootDirectory;
 
         private Random randomiser;
 
@@ -97,7 +98,7 @@ namespace Paprika.Net
 
         private string FileName(string fileName)
         {
-            return _rootDirectory + fileName;
+            return _rootDirectory + Path.DirectorySeparatorChar + fileName;
         }
 
         private void PopulateGrammarFromManifest()
