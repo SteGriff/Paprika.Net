@@ -32,6 +32,9 @@ namespace Paprika.Net
             }
         }
 
+        private int _numberPossible;
+        private int _numberPossibleThisExpression;
+
         public Core()
         {
             CommonInitialisation();
@@ -214,6 +217,9 @@ namespace Paprika.Net
 
         public string Parse(string query, Dictionary<string, string> injectedValues)
         {
+            _numberPossibleThisExpression = 0;
+            _numberPossible = 1;
+
             int open = query.IndexOf('[');
 
             // If we do a loop with no useful operation, nops increases
@@ -270,6 +276,8 @@ namespace Paprika.Net
                 }
                 else if (expression[1] == '?')
                 {
+                    _numberPossibleThisExpression += 1;
+
                     if (randomiser.Next(2) == 0)
                     {
                         blank = true;
@@ -305,6 +313,12 @@ namespace Paprika.Net
             // Query is all fixed up; return it!
             return query;
 
+        }
+
+        public int NumberOfOptions(string query)
+        {
+            Parse(query);
+            return _numberPossible;
         }
 
         private string FixAAndAn(string query)
@@ -391,6 +405,9 @@ namespace Paprika.Net
 
         private string randomFrom(string[] terms)
         {
+            _numberPossibleThisExpression += terms.Length;
+            _numberPossible *= _numberPossibleThisExpression;
+
             int randomId = randomiser.Next(terms.Length);
             return terms[randomId];
         }
