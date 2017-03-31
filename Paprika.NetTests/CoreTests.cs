@@ -34,7 +34,7 @@ namespace Paprika.Net.Tests
         {
             var core = new Core();
 
-            string rootDirectory = "C:/Users/Ste/OneDrive/Documents/Programming/data/paprika-grammar/";
+            string rootDirectory = "C:/Projects/ste/paprika-grammars/";
             core.LoadManifest(rootDirectory);
 
             Assert.AreNotEqual(0, core.Grammar.Count);
@@ -336,6 +336,31 @@ namespace Paprika.Net.Tests
             string actual = core.Parse(input, injection);
 
             Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod, ExpectedException(typeof(GrammarLoadingException))]
+        public void AddingSameCategoryTwiceThrowsGrammarLoadingException()
+        {
+            var core = new Core();
+
+            string grammarString = @"
+*letter
+a
+b
+c
+
+*thing
+fruit
+animal
+
+*letter
+d
+e
+f
+";
+            var lines = grammarString.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+
+            core.LoadGrammarFromString(lines);
         }
     }
 }

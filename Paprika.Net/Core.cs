@@ -48,7 +48,7 @@ namespace Paprika.Net
         {
             foreach (var cat in grammar)
             {
-                CommitCategory(cat.Key, cat.Value);
+                CommitCategory(cat.Key, cat.Value, "direct grammar");
             }
         }
 
@@ -126,20 +126,22 @@ namespace Paprika.Net
                     throw new GrammarLoadingException("Can't find linked grammar file, " + thisFile);
                 }
 
-                LoadGrammar(thisFile);
+                LoadGrammarFromFile(thisFile);
             }
         }
 
-        private void LoadGrammar(string fileName)
+
+        public void LoadGrammarFromString(string[] grammarString)
+        {
+            LoadGrammarFromString(grammarString, null);
+        }
+
+        private void LoadGrammarFromString(string[] grammarString, string source)
         {
             string category = "";
             var categoryGrammar = new List<string>();
 
-            Debug.WriteLine("Loading " + fileName);
-
-            var gLines = File.ReadAllLines(FileName(fileName));
-
-            foreach (var line in gLines)
+            foreach (var line in grammarString)
             {
                 if (IgnoreLine(line))
                 {
@@ -155,18 +157,10 @@ namespace Paprika.Net
                     {
                         if (category.Contains("/"))
                         {
-                            Console.WriteLine("Warning [in {0}]: {1} contains slashes. Consider deleting this category.", fileName, category);
+                            Console.WriteLine("Warning [in {0}]: {1} contains slashes. Consider deleting this category.", source, category);
                         }
 
-                        try
-                        {
-                            CommitCategory(category, categoryGrammar);
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new GrammarLoadingException(String.Format("Error [in {0}] ({1}): {2}", fileName, category, ex.Message));
-                        }
-
+                        CommitCategory(category, categoryGrammar, source);
                     }
 
                     // Now, regardless, read the category under the cursor
@@ -185,8 +179,15 @@ namespace Paprika.Net
             }
 
             // Commit the final cat grammar
-            CommitCategory(category, categoryGrammar);
+            CommitCategory(category, categoryGrammar, source);
+        }
 
+        public void LoadGrammarFromFile(string fileName)
+        {
+            Debug.WriteLine("Loading " + fileName);
+
+            var gLines = File.ReadAllLines(FileName(fileName));
+            LoadGrammarFromString(gLines);
             Debug.WriteLine("   Done\r\n");
         }
 
@@ -202,12 +203,19 @@ namespace Paprika.Net
             return line[0] == '*';
         }
 
-        private void CommitCategory(string category, List<string> categoryGrammar)
+        private void CommitCategory(string category, List<string> categoryGrammar, string grammarSource)
         {
-            category = category.Trim();
-            Debug.WriteLine(" - Set cat " + category);
+            try
+            {
+                category = category.Trim();
+                Debug.WriteLine(" - Set cat " + category);
 
-            Grammar.Add(category, categoryGrammar);
+                Grammar.Add(category, categoryGrammar);
+            }
+            catch (Exception ex)
+            {
+                throw new GrammarLoadingException(String.Format("Error [in {0}] ({1}): {2}", grammarSource, category, ex.Message));
+            }
         }
 
         public string Parse(string query)
