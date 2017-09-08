@@ -34,7 +34,7 @@ namespace Paprika.Net.Tests
         {
             var core = new Core();
 
-            string rootDirectory = "C:/Projects/ste/paprika-grammars/";
+            string rootDirectory = @"C:\Users\Ste\Desktop\Paprika.Net.Console.v1.0\paprika-grammars";
             core.LoadManifest(rootDirectory);
 
             Assert.AreNotEqual(0, core.Grammar.Count);

@@ -35,9 +35,18 @@ namespace Paprika.Net
         private int _numberPossible;
         private int _numberPossibleThisExpression;
 
+        /// <summary>
+        /// When true, all tags will be evaluated even if they won't be shown,
+        /// in order to get an accurate count of options for the query.
+        /// When false, short-circuits will be used to improve perfomance.
+        /// Default false.
+        /// </summary>
+        public bool CountingIsImportant { get; set; }
+
         public Core()
         {
             CommonInitialisation();
+            CountingIsImportant = false;
         }
 
         /// <summary>
@@ -290,15 +299,16 @@ namespace Paprika.Net
                     {
                         blank = true;
                     }
-                    else
-                    {
-                        expression = expression.Replace("?", "");
-                    }
                 }
 
-                if (!blank)
+                if (!blank || CountingIsImportant)
                 {
+                    expression = expression.Replace("?", "");
                     resolution = ResolveBracket(expression, injectedValues);
+                    if (blank)
+                    {
+                        resolution = "";
+                    }
                 }
 
                 // Clean up double spaces (won't catch triple spaces)
@@ -311,6 +321,7 @@ namespace Paprika.Net
                 // Get next open for the while loop
                 open = query.IndexOf('[');
 
+                _numberPossibleThisExpression = 0;
             }
 
             // All [expressions] replaced

@@ -42,13 +42,157 @@ namespace Paprika.NetTests
         #endregion
 
         [TestMethod]
-        public void TwoOptionsInSlashHaveTwoPossibilities()
+        public void Counting_TwoOptionsInSlashHaveTwoPossibilities()
         {
+            var core = new Core() { CountingIsImportant = true };
+
             string query = "[hello/hi]";
 
-            var core = new Core();
-
             int expected = 2;
+            int actual = core.NumberOfOptions(query);
+
+            Assert.AreEqual(expected, actual);
+        }
+        
+        [TestMethod()]
+        public void Counting_ThreeOptionsInOneTagFromGrammar()
+        {
+            var core = new Core() { CountingIsImportant = true };
+            var sampleDictionary = new Dictionary<string, List<string>>
+            {
+                { "animal", new List<string> { "cat", "dog", "mouse" } }
+            };
+
+            core.LoadThisGrammar(sampleDictionary);
+            string query = "[animal]";
+
+            int expected = 3;
+            int actual = core.NumberOfOptions(query);
+
+            Assert.AreEqual(expected, actual);
+        }
+        
+        [TestMethod()]
+        public void Counting_ThreeTimesTwoOptions()
+        {
+            var core = new Core() { CountingIsImportant = true };
+            var sampleDictionary = new Dictionary<string, List<string>>
+            {
+                { "animal", new List<string> { "cat", "dog", "mouse" } },
+                { "colour", new List<string> { "red", "blue" } }
+            };
+
+            core.LoadThisGrammar(sampleDictionary);
+            string query = "the [colour] [animal]";
+
+            int expected = 6;
+            int actual = core.NumberOfOptions(query);
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void Counting_AdditionalOptionWhenQuestionMarkUsed()
+        {
+            var core = new Core() { CountingIsImportant = true };
+            var sampleDictionary = new Dictionary<string, List<string>>
+            {
+                { "animal", new List<string> { "cat", "dog", "mouse" } },
+                { "colour", new List<string> { "red", "blue" } }
+            };
+
+            core.LoadThisGrammar(sampleDictionary);
+            string query = "the [?colour] [animal]";
+            // colour now has effectively 3 options (red/blue/blank) and animal has 3
+            // so total is 9
+
+            int expected = 9;
+
+            //This test was originally non-deterministic so let's do it a few times to make sure 
+            // the result is always the same
+            for (int i = 0; i < 20; i++)
+            { 
+                int actual = core.NumberOfOptions(query);
+                Assert.AreEqual(expected, actual);
+            }
+        }
+        
+        [TestMethod()]
+        public void Counting_MixOfGrammarAndSlashTags()
+        {
+            var core = new Core();
+            var sampleDictionary = new Dictionary<string, List<string>>
+            {
+                { "animal", new List<string> { "cat", "dog", "mouse" } },
+            };
+
+            core.LoadThisGrammar(sampleDictionary);
+            string query = "the [big/small] [animal]";
+
+            int expected = 6;
+            int actual = core.NumberOfOptions(query);
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void Counting_WithNestedGrammarLookups()
+        {
+            var core = new Core();
+            var grammarContent = @"
+* phrase
+[verb] [thing to [verb]]
+
+* verb
+be
+ask
+
+* thing to be
+good
+nice
+
+* thing to ask
+questions
+nicely
+";
+            var grammarLines = grammarContent.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+
+            core.LoadGrammarFromString(grammarLines);
+            string query = "[phrase]";
+
+            //be good
+            //be nice
+            //ask questions
+            //ask nicely
+            int expected = 4;
+            int actual = core.NumberOfOptions(query);
+
+            Assert.AreEqual(expected, actual);
+        }
+        
+        [TestMethod()]
+        public void Counting_MixedDynamicAndStatic()
+        {
+            var core = new Core();
+            var grammarContent = @"
+* phrase
+hello
+nice [thing]
+
+* thing
+hat
+dog
+
+";
+            var grammarLines = grammarContent.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+
+            core.LoadGrammarFromString(grammarLines);
+            string query = "[phrase]";
+
+            //hello
+            //nice hat
+            //nice dog
+            int expected = 3;
             int actual = core.NumberOfOptions(query);
 
             Assert.AreEqual(expected, actual);
