@@ -11,6 +11,7 @@ namespace Paprika.Net.Console
         private RunModes mode = RunModes.ConfiguredManifest;
         private string grammarSource = "";
         private string prompt = "";
+        private bool count = false;
 
         public void Run()
         {
@@ -57,6 +58,12 @@ namespace Paprika.Net.Console
                         case "manifest":
                             LoadFromCommand(commands);
                             continue;
+
+                        case "count":
+                            count = !count;
+                            engine.CountingIsImportant = count;
+                            Con.WriteLine("Counting is now: {0}", count ? "on" : "off");
+                            continue;
                     }
                 }
 
@@ -65,6 +72,13 @@ namespace Paprika.Net.Console
                 {
                     string output = engine.Parse(input);
                     Con.WriteLine(output);
+
+                    if (count)
+                    {
+                        var n = engine.NumberOfOptions();
+                        Con.WriteLine("Number of options considered was between {0} and {1}", n.LowerBound, n.UpperBound);
+                    }
+
                 }
                 catch (BracketResolutionException ex)
                 {
@@ -157,6 +171,7 @@ namespace Paprika.Net.Console
             Con.WriteLine("//? - This message");
             Con.WriteLine("//reload - Reloads grammars from file");
             Con.WriteLine("//test - Writes all grammar definitions to screen");
+            Con.WriteLine("//count - Toggles counting on/off");
             Con.WriteLine("//manifest [file] - Load a manifest file (a list of grammars)");
         }
     }

@@ -337,6 +337,11 @@ namespace Paprika.Net
 
         }
 
+        public IntRange NumberOfOptions()
+        {
+            return new IntRange(_numberPossibleLowerBound, _numberPossibleUpperBound);
+        }
+
         public IntRange NumberOfOptions(string query)
         {
             Parse(query);
@@ -427,17 +432,24 @@ namespace Paprika.Net
 
         private string randomFrom(string[] terms)
         {
-            _numberPossibleThisExpression += terms.Length;
-            _numberPossibleLowerBound += 1;
-            _numberPossibleUpperBound *= _numberPossibleThisExpression;
-
-            Debug.WriteLine(string.Join(";", terms));
-
-            Debug.WriteLine("numberPossibleThisExpression: {0}", _numberPossibleThisExpression);
-            Debug.WriteLine("numberPossible: {0} - {1}", _numberPossibleLowerBound, _numberPossibleUpperBound);
-
-            int randomId = randomiser.Next(terms.Length);
-            return terms[randomId];
+            if (terms.Length == 0)
+            {
+                return "";
+            }
+            try
+            {
+                _numberPossibleThisExpression += terms.Length;
+                _numberPossibleLowerBound += 1;
+                _numberPossibleUpperBound *= _numberPossibleThisExpression;
+                
+                int randomId = randomiser.Next(terms.Length);
+                return terms[randomId];
+            }
+            catch (Exception ex)
+            {
+                string combinedTerms = string.Join(";", terms);
+                throw new BracketResolutionException("Failed to pick random entry - " + ex.ToString(), combinedTerms);
+            }
         }
 
     }

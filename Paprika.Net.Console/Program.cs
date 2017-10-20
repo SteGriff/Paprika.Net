@@ -16,6 +16,7 @@ namespace Paprika.Net.Console
             {
                 Con.WriteLine("Oops - there was a fatal exception and Paprika has to close:");
                 Con.WriteLine(ex.ToString());
+                Con.ReadLine();
             }
         }
 

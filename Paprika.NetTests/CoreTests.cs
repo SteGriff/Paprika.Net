@@ -362,5 +362,19 @@ f
 
             core.LoadGrammarFromString(lines);
         }
+
+        [TestMethod]
+        public void PickRandomFromZeroOptionsDoesNotCrash()
+        {
+            var core = new Core();
+            string grammarString = @"
+* something
+";
+            var lines = grammarString.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+            core.LoadGrammarFromString(lines);
+            string expected = "";
+            var actual = core.Parse("[something]");
+            Assert.AreEqual(expected, actual);
+        }
     }
 }
