@@ -37,12 +37,19 @@ namespace Paprika.Net
         private int _numberPossibleThisExpression;
 
         /// <summary>
-        /// When true, all tags will be evaluated even if they won't be shown,
+        /// When true, more tags will be evaluated even if they won't be shown,
         /// in order to get an accurate count of options for the query.
         /// When false, short-circuits will be used to improve perfomance.
         /// Default false.
         /// </summary>
         public bool CountingIsImportant { get; set; }
+
+        /// <summary>
+        /// When true, the Load routines will 'test' each line as it is read in
+        /// This makes it a lot slower but catches some classes of error at 
+        /// Paprika's 'compile-time' rather than at runtime
+        /// </summary>
+        public bool ValidateOnLoad { get; set; }
 
         public Core()
         {
@@ -68,8 +75,6 @@ namespace Paprika.Net
         /// </summary>
         public void LoadConfiguredManifest()
         {
-            if (Debugger.IsAttached) { Console.WriteLine("Loading grammar..."); }
-
             if (ConfigurationManager.AppSettings["GrammarRoot"] != null)
             {
                 _rootDirectory = ConfigurationManager.AppSettings["GrammarRoot"].ToString();
@@ -79,8 +84,6 @@ namespace Paprika.Net
             {
                 throw new GrammarLoadingException("No manifest configured! Create an AppSetting for <GrammarRoot> which specifies the directory where your index.grammar file is stored.");
             }
-
-            if (Debugger.IsAttached) { Console.WriteLine("... Done"); }
         }
 
         /// <summary>
@@ -140,7 +143,6 @@ namespace Paprika.Net
             }
         }
 
-
         public void LoadGrammarFromString(string[] grammarString)
         {
             LoadGrammarFromString(grammarString, null);
@@ -161,7 +163,7 @@ namespace Paprika.Net
                 if (LineIsCategory(line))
                 {
                     // We've come across a new category
-                    // If we already have a cat in memory, commit it
+                    // If we already have a category in memory, commit it
 
                     if (!String.IsNullOrWhiteSpace(category))
                     {
@@ -228,6 +230,26 @@ namespace Paprika.Net
             }
         }
 
+        public List<PaprikaException> ValidateGrammar()
+        {
+            var exceptionList = new List<PaprikaException>();
+            foreach(var category in Grammar)
+            {
+                foreach(var entry in category.Value)
+                {
+                    try
+                    {
+                        Parse(entry);
+                    }
+                    catch (PaprikaException pex)
+                    {
+                        exceptionList.Add(pex);
+                    }
+                }
+            }
+            return exceptionList;
+        }
+
         public string Parse(string query)
         {
             return Parse(query, null);
@@ -270,7 +292,7 @@ namespace Paprika.Net
                 int close = query.IndexOf(']');
                 if (close < 0)
                 {
-                    throw new InputException("No closing bracket for the opening bracket at col." + open);
+                    throw new InputException(string.Format("No closing bracket for the opening bracket at col.{0} in '{1}'", open, query));
                 }
 
                 // Get the bracketed expression, like [sport] or [!sport]
@@ -392,7 +414,7 @@ namespace Paprika.Net
             int nestingPosition = innerExpression.IndexOfAny(new char[] { '[', ']' });
             if (nestingPosition > -1)
             {
-                throw new FormatException("Nested brackets at col." + nestingPosition + ": \"" + expression + "\"");
+                throw new BracketResolutionException("Nested brackets at col." + nestingPosition + ": \"" + expression + "\"", expression);
             }
 
             // Handle a label inside the tag like [sport#1] (remove the label)
@@ -425,7 +447,7 @@ namespace Paprika.Net
             }
             else
             {
-                throw new BracketResolutionException("Unknown term, can't resolve", innerExpression);
+                throw new BracketResolutionException("Unknown term, can't resolve, [" + innerExpression + "]", innerExpression);
             }
 
         }
@@ -448,7 +470,7 @@ namespace Paprika.Net
             catch (Exception ex)
             {
                 string combinedTerms = string.Join(";", terms);
-                throw new BracketResolutionException("Failed to pick random entry - " + ex.ToString(), combinedTerms);
+                throw new BracketResolutionException("Failed to pick random entry from (" + combinedTerms + "): " + ex.ToString(), combinedTerms);
             }
         }
 

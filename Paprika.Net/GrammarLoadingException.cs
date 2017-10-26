@@ -2,7 +2,7 @@
 
 namespace Paprika.Net
 {
-    public class GrammarLoadingException : Exception
+    public class GrammarLoadingException : PaprikaException
     {
         public GrammarLoadingException(string message) : base(message)
         { }

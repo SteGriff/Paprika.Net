@@ -2,7 +2,7 @@
 
 namespace Paprika.Net
 {
-    public class BracketResolutionException : Exception
+    public class BracketResolutionException : PaprikaException
     {
         public string Category { get; set; }
 

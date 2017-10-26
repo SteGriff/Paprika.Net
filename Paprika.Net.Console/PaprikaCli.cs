@@ -64,6 +64,24 @@ namespace Paprika.Net.Console
                             engine.CountingIsImportant = count;
                             Con.WriteLine("Counting is now: {0}", count ? "on" : "off");
                             continue;
+
+                        case "validate":
+                            Con.WriteLine("Reloading...");
+                            Reload();
+                            Con.WriteLine("Validating...");
+                            var exs = engine.ValidateGrammar();
+                            if (exs.Any())
+                            {
+                                foreach (var ex in exs)
+                                {
+                                    Con.WriteLine(ex.Message);
+                                }
+                            }
+                            else
+                            {
+                                Con.WriteLine("No errors - nice");
+                            }
+                            continue;
                     }
                 }
 
@@ -82,7 +100,7 @@ namespace Paprika.Net.Console
                 }
                 catch (BracketResolutionException ex)
                 {
-                    Con.WriteLine("{0} in [{1}]", ex.Message, ex.Category);
+                    Con.WriteLine(ex.Message);
                 }
                 catch (FormatException ex)
                 {
@@ -170,6 +188,7 @@ namespace Paprika.Net.Console
         {
             Con.WriteLine("//? - This message");
             Con.WriteLine("//reload - Reloads grammars from file");
+            Con.WriteLine("//validate - Reloads grammar and then validates it to find any errors");
             Con.WriteLine("//test - Writes all grammar definitions to screen");
             Con.WriteLine("//count - Toggles counting on/off");
             Con.WriteLine("//manifest [file] - Load a manifest file (a list of grammars)");

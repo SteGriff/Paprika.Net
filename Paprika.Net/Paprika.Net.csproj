@@ -46,6 +46,7 @@
     <Compile Include="BracketResolutionException.cs" />
     <Compile Include="InputException.cs" />
     <Compile Include="NumericalRange.cs" />
+    <Compile Include="PaprikaException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

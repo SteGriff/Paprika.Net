@@ -2,7 +2,7 @@
 
 namespace Paprika.Net
 {
-    public class CoreDeveloperException : Exception
+    public class CoreDeveloperException : PaprikaException
     {
         public CoreDeveloperException(string message) : base(message)
         { }
