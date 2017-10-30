@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Paprika.Net
+﻿namespace Paprika.Net.Exceptions
 {
     public class InputException : PaprikaException
     {

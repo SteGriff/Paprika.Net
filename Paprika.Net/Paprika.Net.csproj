@@ -40,13 +40,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CoreDeveloperException.cs" />
-    <Compile Include="GrammarLoadingException.cs" />
+    <Compile Include="Exceptions\CoreDeveloperException.cs" />
+    <Compile Include="Exceptions\GrammarLoadingException.cs" />
     <Compile Include="Core.cs" />
-    <Compile Include="BracketResolutionException.cs" />
-    <Compile Include="InputException.cs" />
+    <Compile Include="Exceptions\BracketResolutionException.cs" />
+    <Compile Include="Exceptions\InputException.cs" />
     <Compile Include="NumericalRange.cs" />
-    <Compile Include="PaprikaException.cs" />
+    <Compile Include="Exceptions\PaprikaException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

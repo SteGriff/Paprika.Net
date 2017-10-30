@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Paprika.Net.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;

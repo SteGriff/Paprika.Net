@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Paprika.Net.Exceptions;
+using System;
 using System.IO;
 using System.Linq;
 using Con = System.Console;

@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Paprika.Net;
+using Paprika.Net.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
