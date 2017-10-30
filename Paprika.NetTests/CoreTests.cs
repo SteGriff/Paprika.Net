@@ -223,8 +223,8 @@ namespace Paprika.Net.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof (FormatException))]
-        public void NestedTagWithNoEarlyCallThrowsError()
+        [ExpectedException(typeof (BracketResolutionException))]
+        public void NestedTagWithNoEarlyCallThrowsBracketResolutionException()
         {
             var core = new Core();
             var sampleDictionary = new Dictionary<string, List<string>>
