@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 
 namespace Paprika.Net
 {

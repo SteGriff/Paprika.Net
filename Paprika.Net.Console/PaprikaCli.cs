@@ -190,7 +190,7 @@ namespace Paprika.Net.Console
             Con.WriteLine("//? - This message");
             Con.WriteLine("//reload - Reloads grammars from file");
             Con.WriteLine("//validate - Reloads grammar and then validates it to find any errors");
-            Con.WriteLine("//test - Writes all grammar definitions to screen");
+            Con.WriteLine("//test - Writes all loaded grammar definitions to screen");
             Con.WriteLine("//count - Toggles counting on/off");
             Con.WriteLine("//manifest [file] - Load a manifest file (a list of grammars)");
         }
