@@ -170,7 +170,8 @@ namespace Paprika.Net.Console
                 switch (mode)
                 {
                     case RunModes.ConfiguredManifest:
-                        engine.LoadConfiguredManifest();
+                        //engine.LoadConfiguredManifest();
+                        LoadSpecific("C:\\projects\\ste\\paprika-grammars");
                         break;
 
                     case RunModes.SpecifiedManifest:

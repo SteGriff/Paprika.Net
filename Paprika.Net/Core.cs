@@ -1,7 +1,6 @@
 ﻿using Paprika.Net.Exceptions;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 
@@ -57,6 +56,8 @@ namespace Paprika.Net
             CountingIsImportant = false;
         }
 
+
+
         /// <summary>
         /// Load the specified dictionary as the grammar
         /// (Overwrites any existing grammar)
@@ -70,35 +71,14 @@ namespace Paprika.Net
         }
 
         /// <summary>
-        /// Load the grammars from the root directory specified by the GrammarRoot key in AppSettings
-        /// (Overwrites any existing grammar)
-        /// </summary>
-        public void LoadConfiguredManifest()
-        {
-            if (ConfigurationManager.AppSettings["GrammarRoot"] != null)
-            {
-                _rootDirectory = ConfigurationManager.AppSettings["GrammarRoot"].ToString();
-                PopulateGrammarFromManifest();
-            }
-            else
-            {
-                throw new GrammarLoadingException("No manifest configured! Create an AppSetting for <GrammarRoot> which specifies the directory where your index.grammar file is stored.");
-            }
-        }
-
-        /// <summary>
         /// Load the grammars using the specified rootDirectory which contains an index.grammar file
         /// (Overwrites any existing grammar)
         /// </summary>
         /// <param name="rootDirectory">A directory containing an index.grammar file</param>
         public void LoadManifest(string rootDirectory)
         {
-            if (Debugger.IsAttached) { Console.WriteLine("Loading grammar..."); }
-
             _rootDirectory = rootDirectory;
             PopulateGrammarFromManifest();
-
-            if (Debugger.IsAttached) { Console.WriteLine("... Done"); }
         }
 
         private void CommonInitialisation()
@@ -167,11 +147,6 @@ namespace Paprika.Net
 
                     if (!String.IsNullOrWhiteSpace(category))
                     {
-                        if (category.Contains("/"))
-                        {
-                            Console.WriteLine("Warning [in {0}]: {1} contains slashes. Consider deleting this category.", source, category);
-                        }
-
                         CommitCategory(category, categoryGrammar, source);
                     }
 
@@ -235,7 +210,14 @@ namespace Paprika.Net
             var exceptionList = new List<PaprikaException>();
             foreach(var category in Grammar)
             {
-                foreach(var entry in category.Value)
+                if (category.Key.Contains("/"))
+                {
+                    string message = string.Format("Warning: {0} contains slashes. Consider renaming or deleting this category.", category);
+
+                    exceptionList.Add(new GrammarLoadingException(message));
+                }
+
+                foreach (var entry in category.Value)
                 {
                     try
                     {

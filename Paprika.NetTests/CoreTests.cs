@@ -21,16 +21,6 @@ namespace Paprika.Net.Tests
         }
 
         [TestMethod()]
-        public void CoreLoadsFromConfiguredDirectory()
-        {
-            var core = new Core();
-            core.LoadConfiguredManifest();
-
-            Assert.AreNotEqual(0, core.Grammar.Count);
-            Assert.IsNotNull(core.Grammar);
-        }
-
-        [TestMethod()]
         public void CoreLoadsFromPassedDirectory()
         {
             var core = new Core();

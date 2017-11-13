@@ -1,13 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2008
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Paprika.Net", "Paprika.Net\Paprika.Net.csproj", "{AA04ACA0-7A12-4099-ABC1-0355228F4E23}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Paprika.Net.Console", "Paprika.Net.Console\Paprika.Net.Console.csproj", "{BA4E974B-365B-4DFF-92AC-AF35152ED85A}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Paprika.NetTests", "Paprika.NetTests\Paprika.NetTests.csproj", "{95C5D6E5-E91F-4F13-A41E-55557C81C054}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Paprika.Net", "Paprika.Net\Paprika.Net.csproj", "{6AD7EB61-4CD1-4D27-A6E0-A5D0B52B603F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Paprika.Net.CLI", "Paprika.Net.CLI\Paprika.Net.CLI.csproj", "{566FA857-903A-4A66-B0D6-2F28454F2153}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,20 +15,23 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{AA04ACA0-7A12-4099-ABC1-0355228F4E23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AA04ACA0-7A12-4099-ABC1-0355228F4E23}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AA04ACA0-7A12-4099-ABC1-0355228F4E23}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AA04ACA0-7A12-4099-ABC1-0355228F4E23}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BA4E974B-365B-4DFF-92AC-AF35152ED85A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BA4E974B-365B-4DFF-92AC-AF35152ED85A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BA4E974B-365B-4DFF-92AC-AF35152ED85A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BA4E974B-365B-4DFF-92AC-AF35152ED85A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{95C5D6E5-E91F-4F13-A41E-55557C81C054}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{95C5D6E5-E91F-4F13-A41E-55557C81C054}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{95C5D6E5-E91F-4F13-A41E-55557C81C054}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{95C5D6E5-E91F-4F13-A41E-55557C81C054}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6AD7EB61-4CD1-4D27-A6E0-A5D0B52B603F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6AD7EB61-4CD1-4D27-A6E0-A5D0B52B603F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6AD7EB61-4CD1-4D27-A6E0-A5D0B52B603F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6AD7EB61-4CD1-4D27-A6E0-A5D0B52B603F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{566FA857-903A-4A66-B0D6-2F28454F2153}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{566FA857-903A-4A66-B0D6-2F28454F2153}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{566FA857-903A-4A66-B0D6-2F28454F2153}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{566FA857-903A-4A66-B0D6-2F28454F2153}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {40EE903B-010E-43B8-B2A3-56BE04E1063A}
 	EndGlobalSection
 EndGlobal
