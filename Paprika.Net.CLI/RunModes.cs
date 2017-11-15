@@ -2,7 +2,7 @@
 {
     enum RunModes
     {
-        ConfiguredManifest,
+        WorkingDirectory,
         SpecifiedManifest
     }
 }

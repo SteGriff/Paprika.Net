@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "Paprika.Net.CLI": {
+      "commandName": "Project"
+    }
+  }
+}

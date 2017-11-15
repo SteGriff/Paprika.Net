@@ -9,7 +9,7 @@ namespace Paprika.Net.Console
     public class PaprikaCli
     {
         private Core engine = new Core();
-        private RunModes mode = RunModes.ConfiguredManifest;
+        private RunModes mode = RunModes.WorkingDirectory;
         private string grammarSource = "";
         private string prompt = "";
         private bool count = false;
@@ -132,7 +132,7 @@ namespace Paprika.Net.Console
 
         private void LoadConfigured()
         {
-            mode = RunModes.ConfiguredManifest;
+            mode = RunModes.WorkingDirectory;
             prompt = ">";
 
             Reload();
@@ -169,9 +169,8 @@ namespace Paprika.Net.Console
             {
                 switch (mode)
                 {
-                    case RunModes.ConfiguredManifest:
-                        //engine.LoadConfiguredManifest();
-                        LoadSpecific("C:\\projects\\ste\\paprika-grammars");
+                    case RunModes.WorkingDirectory:
+                        engine.LoadManifest(Environment.CurrentDirectory);
                         break;
 
                     case RunModes.SpecifiedManifest:

@@ -55,9 +55,7 @@ namespace Paprika.Net
             CommonInitialisation();
             CountingIsImportant = false;
         }
-
-
-
+        
         /// <summary>
         /// Load the specified dictionary as the grammar
         /// (Overwrites any existing grammar)
@@ -99,12 +97,13 @@ namespace Paprika.Net
 
         private void PopulateGrammarFromManifest()
         {
-            if (!File.Exists(FileName(GRAMMAR_MANIFEST)))
+            string targetFile = FileName(GRAMMAR_MANIFEST);
+            if (!File.Exists(targetFile))
             {
-                throw new GrammarLoadingException("Grammar manifest index.grammar not found");
+                throw new GrammarLoadingException("Grammar manifest index.grammar not found at " + targetFile);
             }
 
-            var manifest = File.ReadAllLines(FileName(GRAMMAR_MANIFEST));
+            var manifest = File.ReadAllLines(targetFile);
 
             foreach (var line in manifest)
             {
