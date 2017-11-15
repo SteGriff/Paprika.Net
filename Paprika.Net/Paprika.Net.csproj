@@ -3,6 +3,17 @@
   <PropertyGroup>
     <TargetFramework>netstandard1.3</TargetFramework>
 	<RestoreProjectStyle>PackageReference</RestoreProjectStyle>
+	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	<PackageId>SteGriff.Paprika.Net</PackageId>
+	<Version>1.2.0</Version>
+	<Authors>Stephen Griffiths</Authors>
+	<Company>SteGriff</Company>
+	<PackageLicenseUrl>https://github.com/SteGriff/Paprika.Net/blob/master/LICENSE.md</PackageLicenseUrl>
+	<PackageProjectUrl>https://github.com/SteGriff/Paprika.Net/</PackageProjectUrl>
+	<PackageIconUrl>https://raw.githubusercontent.com/SteGriff/Paprika.Net/master/icon/touch-icon.png</PackageIconUrl>
+	<PackageTags>paprika flavour text language generation</PackageTags>
+	<Description>Parse and process the Paprika text generation language</Description>
+	<Copyright>Copyright Stephen Griffiths 2015-2017</Copyright>
   </PropertyGroup>
 
 </Project>

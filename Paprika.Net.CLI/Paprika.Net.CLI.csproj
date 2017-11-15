@@ -5,6 +5,8 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <StartupObject>Paprika.Net.Console.Program</StartupObject>
 	<RestoreProjectStyle>PackageReference</RestoreProjectStyle>
+	<AssemblyVersion>1.2.0.0</AssemblyVersion>
+	<FileVersion>1.2.0.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
