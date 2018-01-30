@@ -2,9 +2,8 @@
 using System;
 using System.IO;
 using System.Linq;
-using Con = System.Console;
 
-namespace Paprika.Net.Console
+namespace Paprika.Net.CLI
 {
     public class PaprikaCli
     {
@@ -18,13 +17,13 @@ namespace Paprika.Net.Console
         {
             LoadConfigured();
 
-            Con.WriteLine("Welcome to Paprika. Type a phrase to resolve it, or type //? for extra commands.");
+            Console.WriteLine("Welcome to Paprika. Type a phrase to resolve it, or type //? for extra commands.");
 
             while (true)
             {
                 //Display prompt and get input
-                Con.Write(prompt);
-                string input = Con.ReadLine();
+                Console.Write(prompt);
+                string input = Console.ReadLine();
 
                 //Skip back to input if nothing was entered
                 if (String.IsNullOrWhiteSpace(input))
@@ -51,9 +50,9 @@ namespace Paprika.Net.Console
                             continue;
 
                         case "reload":
-                            Con.WriteLine("Reloading...");
+                            Console.WriteLine("Reloading...");
                             Reload();
-                            Con.WriteLine("Done");
+                            Console.WriteLine("Done");
                             continue;
 
                         case "manifest":
@@ -63,25 +62,37 @@ namespace Paprika.Net.Console
                         case "count":
                             count = !count;
                             engine.CountingIsImportant = count;
-                            Con.WriteLine("Counting is now: {0}", count ? "on" : "off");
+                            Console.WriteLine("Counting is now: {0}", count ? "on" : "off");
                             continue;
 
                         case "validate":
-                            Con.WriteLine("Reloading...");
+                            Console.WriteLine("Reloading...");
                             Reload();
-                            Con.WriteLine("Validating...");
+                            Console.WriteLine("Validating...");
                             var exs = engine.ValidateGrammar();
                             if (exs.Any())
                             {
                                 foreach (var ex in exs)
                                 {
-                                    Con.WriteLine(ex.Message);
+                                    Console.WriteLine(ex.Message);
                                 }
                             }
                             else
                             {
-                                Con.WriteLine("No errors - nice");
+                                Console.WriteLine("No errors - nice");
                             }
+                            continue;
+
+                        case "login":
+                            Console.Write("Username: ");
+                            var username = Console.ReadLine();
+                            Console.Write("Password (key-presses hidden): ");
+                            var password = new PasswordHarvest().Harvest();
+
+                            continue;
+
+                        case "upload":
+
                             continue;
                     }
                 }
@@ -90,26 +101,26 @@ namespace Paprika.Net.Console
                 try
                 {
                     string output = engine.Parse(input);
-                    Con.WriteLine(output);
+                    Console.WriteLine(output);
 
                     if (count)
                     {
                         var n = engine.NumberOfOptions();
-                        Con.WriteLine("Number of options considered was between {0} and {1}", n.LowerBound, n.UpperBound);
+                        Console.WriteLine("Number of options considered was between {0} and {1}", n.LowerBound, n.UpperBound);
                     }
 
                 }
                 catch (BracketResolutionException ex)
                 {
-                    Con.WriteLine(ex.Message);
+                    Console.WriteLine(ex.Message);
                 }
                 catch (FormatException ex)
                 {
-                    Con.WriteLine(ex.Message);
+                    Console.WriteLine(ex.Message);
                 }
                 catch (InputException ex)
                 {
-                    Con.WriteLine(ex.Message);
+                    Console.WriteLine(ex.Message);
                 }
 
             }
@@ -120,14 +131,14 @@ namespace Paprika.Net.Console
             var grammar = engine.Grammar;
             foreach (var g in grammar)
             {
-                Con.WriteLine(g.Key);
+                Console.WriteLine(g.Key);
                 foreach (var x in g.Value)
                 {
-                    Con.WriteLine("\t{0}", x);
+                    Console.WriteLine("\t{0}", x);
                 }
             }
-            Con.WriteLine("Press Return");
-            Con.ReadLine();
+            Console.WriteLine("Press Return");
+            Console.ReadLine();
         }
 
         private void LoadConfigured()
@@ -147,7 +158,7 @@ namespace Paprika.Net.Console
             }
             else
             {
-                Con.WriteLine("You didn't specify a file after 'manifest' command, so I'll reload the configured grammar.");
+                Console.WriteLine("You didn't specify a file after 'manifest' command, so I'll reload the configured grammar.");
                 LoadConfigured();
             }
         }
@@ -180,19 +191,21 @@ namespace Paprika.Net.Console
             }
             catch (GrammarLoadingException ex)
             {
-                Con.WriteLine(ex.Message);
+                Console.WriteLine(ex.Message);
             }
 
         }
 
         private void HelpText()
         {
-            Con.WriteLine("//? - This message");
-            Con.WriteLine("//reload - Reloads grammars from file");
-            Con.WriteLine("//validate - Reloads grammar and then validates it to find any errors");
-            Con.WriteLine("//test - Writes all loaded grammar definitions to screen");
-            Con.WriteLine("//count - Toggles counting on/off");
-            Con.WriteLine("//manifest [file] - Load a manifest file (a list of grammars)");
+            Console.WriteLine("//? - This message");
+            Console.WriteLine("//reload - Reloads grammars from file");
+            Console.WriteLine("//validate - Reloads grammar and then validates it to find any errors");
+            Console.WriteLine("//test - Writes all loaded grammar definitions to screen");
+            Console.WriteLine("//count - Toggles counting on/off");
+            Console.WriteLine("//manifest [file] - Load a manifest file (a list of grammars)");
+            Console.WriteLine("//login - Log in to a Paprika server (allows you to upload grammars)");
+            Console.WriteLine("//upload - Upload the currently loaded grammar to a Paprika server (must be logged in first)");
         }
     }
 }

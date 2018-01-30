@@ -1,7 +1,6 @@
 ﻿using System;
-using Con = System.Console;
 
-namespace Paprika.Net.Console
+namespace Paprika.Net.CLI
 {
     class Program
     {
@@ -14,11 +13,10 @@ namespace Paprika.Net.Console
             }
             catch (Exception ex)
             {
-                Con.WriteLine("Oops - there was a fatal exception and Paprika has to close:");
-                Con.WriteLine(ex.ToString());
-                Con.ReadLine();
+                Console.WriteLine("Oops - there was a fatal exception and Paprika has to close:");
+                Console.WriteLine(ex.ToString());
+                Console.ReadLine();
             }
         }
-
     }
 }

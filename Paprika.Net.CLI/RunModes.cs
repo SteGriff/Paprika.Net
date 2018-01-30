@@ -1,4 +1,4 @@
-﻿namespace Paprika.Net.Console
+﻿namespace Paprika.Net.CLI
 {
     enum RunModes
     {
