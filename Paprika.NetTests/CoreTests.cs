@@ -191,7 +191,7 @@ namespace Paprika.Net.Tests
             string input = "[!animal]";
             string expected = "";
             string actual = core.Parse(input);
-            
+
             Assert.AreEqual(expected, actual);
         }
 
@@ -214,7 +214,7 @@ namespace Paprika.Net.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof (BracketResolutionException))]
+        [ExpectedException(typeof(BracketResolutionException))]
         public void NestedTagWithNoEarlyCallThrowsBracketResolutionException()
         {
             var core = new Core();
@@ -226,10 +226,10 @@ namespace Paprika.Net.Tests
 
             core.LoadThisGrammar(sampleDictionary);
             string input = "[[animal]]";
-            
-            //We expect a FormatException using the ExpectedException attribute
+
+            //We expect a BracketResolutionException using the ExpectedException attribute
             string actual = core.Parse(input);
-            
+
         }
 
         [TestMethod]
@@ -366,6 +366,114 @@ f
             string expected = "";
             var actual = core.Parse("[something]");
             Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void TripleNestedBrackets()
+        {
+            var core = new Core();
+            string grammarString = @"
+#Toplevel
+* thing
+food
+animal
+
+#Midlevel
+* food
+fruit
+vegetable
+
+* animal
+bird
+fish
+
+#Bottomlevel
+* fruit
+apple
+orange
+
+* vegetable
+onion
+carrot
+
+* bird
+sparrow
+hawk
+
+* fish
+carp
+trout
+";
+            var lines = grammarString.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+            core.LoadGrammarFromString(lines);
+
+            var possibilities = new List<string>() { "apple", "orange", "onion", "carrot", "sparrow", "hawk", "carp", "trout" };
+
+            for (int i = 0; i < 50; i++)
+            {
+                var actual = core.Parse("[!thing][![thing]][[[thing]]]");
+                CollectionAssert.Contains(possibilities, actual);
+            }
+        }
+
+        [TestMethod]
+        public void CommentIsIgnoredInEntryList()
+        {
+            var core = new Core();
+            string grammarString = @"
+* something
+dog
+#cat
+mouse
+";
+            var lines = grammarString.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+            core.LoadGrammarFromString(lines);
+
+            var possibilities = new List<string>() { "dog", "mouse" };
+            for (int i = 0; i < 50; i++)
+            {
+                var actual = core.Parse("[something]");
+                CollectionAssert.Contains(possibilities, actual);
+            }
+        }
+
+        [TestMethod]
+        public void CommentCanBeEscaped()
+        {
+            var core = new Core();
+            string grammarString = @"
+* hashtag
+\#Party
+\#Yay
+";
+            var lines = grammarString.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+            core.LoadGrammarFromString(lines);
+
+            var possibilities = new List<string>() { "#Party", "#Yay" };
+            for (int i = 0; i < 50; i++)
+            {
+                var actual = core.Parse("[hashtag]");
+                CollectionAssert.Contains(possibilities, actual);
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InputException))]
+        public void FullyRecursiveGrammarFinishesProcessing()
+        {
+            var core = new Core();
+            string grammarString = @"
+* recursion
+ooh [recursion]
+hey [recursion]
+nice [recursion]
+[recursion] dog
+";
+            var lines = grammarString.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+            core.LoadGrammarFromString(lines);
+            
+            var actual = core.Parse("[recursion]");
+            //Expect InputException (See annotation)
         }
     }
 }

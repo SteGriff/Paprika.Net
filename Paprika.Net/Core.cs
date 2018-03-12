@@ -35,6 +35,9 @@ namespace Paprika.Net
         private int _numberPossibleUpperBound;
         private int _numberPossibleThisExpression;
 
+        private int _totalNumberOfParseCyclesSpent;
+        private int _parseCyclesMax = 2 ^ 16;
+
         /// <summary>
         /// When true, more tags will be evaluated even if they won't be shown,
         /// in order to get an accurate count of options for the query.
@@ -160,7 +163,9 @@ namespace Paprika.Net
                 else
                 {
                     // It's a grammar member
-                    categoryGrammar.Add(line.Trim());
+                    // Trim whitespace and leading escape character if any
+                    var finalLine = line.Trim().TrimStart(new char[] { '\\' });
+                    categoryGrammar.Add(finalLine);
                 }
             }
 
@@ -179,7 +184,7 @@ namespace Paprika.Net
 
         private bool IgnoreLine(string line)
         {
-            //Ignore if comment or empty
+            //Ignore if comment or empty. P.s. Comment character can be escaped with '\'
             string trimmed = line.Trim();
             return String.IsNullOrWhiteSpace(trimmed) || trimmed[0] == '#';
         }
@@ -240,6 +245,7 @@ namespace Paprika.Net
         {
             _numberPossibleLowerBound = 1;
             _numberPossibleUpperBound = 1;
+            _totalNumberOfParseCyclesSpent = 0;
 
             int open = query.IndexOf('[');
 
@@ -251,8 +257,8 @@ namespace Paprika.Net
             while (open > -1)
             {
                 _numberPossibleThisExpression = 0;
-
-                //Check for infinite loop
+                
+                //Check for infinite loop (unchanging expression)
                 if (query == oldQuery)
                 {
                     nops += 1;
@@ -261,8 +267,14 @@ namespace Paprika.Net
                         throw new InputException("Found an infinite loop and quit");
                     }
                 }
-
                 oldQuery = query;
+
+                //Check for infinite recursion
+                _totalNumberOfParseCyclesSpent += 1;
+                if (_totalNumberOfParseCyclesSpent >= _parseCyclesMax)
+                {
+                    throw new InputException("Found infinite recursion and quit");
+                }
 
                 // Here we go
                 // Setup the blanking flag
