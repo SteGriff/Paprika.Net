@@ -59,3 +59,11 @@ By default, the grammars are chosen from the `paprika-grammar` submodule (`../..
 The specified directory must contain an `index.grammar` file.
 
 [pap]: http://github.com/stegriff/paprika
+
+
+## Packaging for NuGet (note to self)
+
+ * Build in Release Mode
+ * Publish from VS, not Nuspec
+ * Go to nuget.org Upload and upload the new package from the Build directory
+ 
