@@ -36,7 +36,7 @@ namespace Paprika.Net
         private int _numberPossibleThisExpression;
 
         private int _totalNumberOfParseCyclesSpent;
-        private int _parseCyclesMax = 2 ^ 16;
+        private int _parseCyclesMax = 65535;
 
         /// <summary>
         /// When true, more tags will be evaluated even if they won't be shown,
