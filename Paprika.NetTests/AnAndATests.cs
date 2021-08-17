@@ -7,10 +7,11 @@ namespace Paprika.NetTests
     [TestClass]
     public class AnAndATests
     {
-        Core core;
+        private readonly PaprikaEngine core;
+
         public AnAndATests()
         {
-            core = new Core();
+            core = new PaprikaEngine();
         }
 
         [TestMethod()]

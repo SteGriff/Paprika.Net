@@ -3,6 +3,7 @@ using Paprika.Net;
 using Paprika.Net.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,20 +13,23 @@ namespace Paprika.Net.Tests
     [TestClass()]
     public class CoreTests
     {
-
         [TestMethod()]
         public void NewCoreHasNoGrammar()
         {
-            var core = new Core();
+            var core = new PaprikaEngine();
             Assert.AreEqual(0, core.Grammar.Count);
         }
 
         [TestMethod()]
         public void CoreLoadsFromPassedDirectory()
         {
-            var core = new Core();
+            var core = new PaprikaEngine();
 
-            string rootDirectory = @"C:\Projects\ste\paprika-grammars";
+            // You gotta pull down submodules for this to work
+            // git submodule update --init --recursive
+            var executingDirectory = new DirectoryInfo(Directory.GetCurrentDirectory());
+            string rootDirectory = executingDirectory.Parent.Parent.Parent.FullName + @"\paprika-grammar";
+
             core.LoadManifest(rootDirectory);
 
             Assert.AreNotEqual(0, core.Grammar.Count);
@@ -35,7 +39,7 @@ namespace Paprika.Net.Tests
         [TestMethod()]
         public void SlashTagWithTwoOptions()
         {
-            var core = new Core();
+            var core = new PaprikaEngine();
 
             string input = "[cat/dog]";
 
@@ -66,7 +70,7 @@ namespace Paprika.Net.Tests
         [TestMethod()]
         public void SlashTagWithOneOptionTwice()
         {
-            var core = new Core();
+            var core = new PaprikaEngine();
             string input = "[dog/dog]";
 
             string actual = core.Parse(input);
@@ -78,7 +82,7 @@ namespace Paprika.Net.Tests
         [TestMethod()]
         public void PickRandomlyFromCategoryOfThree()
         {
-            var core = new Core();
+            var core = new PaprikaEngine();
             var sampleDictionary = new Dictionary<string, List<string>>
             {
                 { "animal", new List<string> { "cat", "dog", "mouse" } }
@@ -120,7 +124,7 @@ namespace Paprika.Net.Tests
         [TestMethod()]
         public void SameTagTwiceGetsSameResult()
         {
-            var core = new Core();
+            var core = new PaprikaEngine();
             var sampleDictionary = new Dictionary<string, List<string>>
             {
                 { "animal", new List<string> { "dog", "cat" } }
@@ -137,7 +141,7 @@ namespace Paprika.Net.Tests
         [TestMethod()]
         public void SameTagTwiceWithMarkersCanHaveSeparateResults()
         {
-            var core = new Core();
+            var core = new PaprikaEngine();
             var sampleDictionary = new Dictionary<string, List<string>>
             {
                 { "animal", new List<string> { "dog", "cat" } }
@@ -163,7 +167,7 @@ namespace Paprika.Net.Tests
         [TestMethod]
         public void NestedTagEvaluates()
         {
-            var core = new Core();
+            var core = new PaprikaEngine();
             var sampleDictionary = new Dictionary<string, List<string>>
             {
                 { "animal", new List<string> { "canine" } },
@@ -181,7 +185,7 @@ namespace Paprika.Net.Tests
         [TestMethod]
         public void HiddenTagDoesNotDisplay()
         {
-            var core = new Core();
+            var core = new PaprikaEngine();
             var sampleDictionary = new Dictionary<string, List<string>>
             {
                 { "animal", new List<string> { "canine", "feline" } }
@@ -198,7 +202,7 @@ namespace Paprika.Net.Tests
         [TestMethod]
         public void HiddenTagPopulatesNestedInstance()
         {
-            var core = new Core();
+            var core = new PaprikaEngine();
             var sampleDictionary = new Dictionary<string, List<string>>
             {
                 { "animal", new List<string> { "canine" } },
@@ -217,7 +221,7 @@ namespace Paprika.Net.Tests
         [ExpectedException(typeof(BracketResolutionException))]
         public void NestedTagWithNoEarlyCallThrowsBracketResolutionException()
         {
-            var core = new Core();
+            var core = new PaprikaEngine();
             var sampleDictionary = new Dictionary<string, List<string>>
             {
                 { "animal", new List<string> { "canine" } },
@@ -235,7 +239,7 @@ namespace Paprika.Net.Tests
         [TestMethod]
         public void FairDistributionOfNestedTagResults()
         {
-            var core = new Core();
+            var core = new PaprikaEngine();
             var sampleDictionary = new Dictionary<string, List<string>>
             {
                 { "animal", new List<string> { "canine", "feline" } },
@@ -285,7 +289,7 @@ namespace Paprika.Net.Tests
         [TestMethod]
         public void InjectedValueUsedInsteadOfRandom()
         {
-            var core = new Core();
+            var core = new PaprikaEngine();
             var sampleDictionary = new Dictionary<string, List<string>>
             {
                 { "letter", new List<string> { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" } },
@@ -306,7 +310,7 @@ namespace Paprika.Net.Tests
         [TestMethod]
         public void MultipleInjectedValuesUsedInsteadOfRandom()
         {
-            var core = new Core();
+            var core = new PaprikaEngine();
             var sampleDictionary = new Dictionary<string, List<string>>
             {
                 { "letter", new List<string> { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" } },
@@ -332,7 +336,7 @@ namespace Paprika.Net.Tests
         [TestMethod, ExpectedException(typeof(GrammarLoadingException))]
         public void AddingSameCategoryTwiceThrowsGrammarLoadingException()
         {
-            var core = new Core();
+            var core = new PaprikaEngine();
 
             string grammarString = @"
 *letter
@@ -357,7 +361,7 @@ f
         [TestMethod]
         public void PickRandomFromZeroOptionsDoesNotCrash()
         {
-            var core = new Core();
+            var core = new PaprikaEngine();
             string grammarString = @"
 * something
 ";
@@ -371,7 +375,7 @@ f
         [TestMethod]
         public void TripleNestedBrackets()
         {
-            var core = new Core();
+            var core = new PaprikaEngine();
             string grammarString = @"
 #Toplevel
 * thing
@@ -419,7 +423,7 @@ trout
         [TestMethod]
         public void CommentIsIgnoredInEntryList()
         {
-            var core = new Core();
+            var core = new PaprikaEngine();
             string grammarString = @"
 * something
 dog
@@ -433,6 +437,7 @@ mouse
             for (int i = 0; i < 50; i++)
             {
                 var actual = core.Parse("[something]");
+                if (actual == "cat") Assert.Fail();
                 CollectionAssert.Contains(possibilities, actual);
             }
         }
@@ -440,7 +445,7 @@ mouse
         [TestMethod]
         public void CommentCanBeEscaped()
         {
-            var core = new Core();
+            var core = new PaprikaEngine();
             string grammarString = @"
 * hashtag
 \#Party
@@ -458,10 +463,62 @@ mouse
         }
 
         [TestMethod]
+        public void OutputIsTrimmed()
+        {
+            var core = new PaprikaEngine();
+            string grammarString = @"
+* phrase
+hello [/world]
+";
+            var lines = grammarString.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+            core.LoadGrammarFromString(lines);
+
+            var possibilities = new List<string>() { "hello", "hello world" };
+            for (int i = 0; i < 100; i++)
+            {
+                var actual = core.Parse("[phrase]");
+                CollectionAssert.Contains(possibilities, actual);
+                Assert.AreNotEqual("hello ", actual, "Shouldn't have trailing space");
+            }
+        }
+
+        [TestMethod]
+        public void QuestionMarkCanHideOutput()
+        {
+            var core = new PaprikaEngine();
+            string grammarString = @"
+* phrase
+hello [?place]
+
+* place
+world
+southport
+";
+            var lines = grammarString.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+            core.LoadGrammarFromString(lines);
+
+            var helloCount = 0;
+            var helloWorldCount = 0;
+            var helloSouthportCount = 0;
+            for (int i = 0; i < 1000; i++)
+            {
+                var actual = core.Parse("[phrase]");
+                if (actual == "hello") helloCount++;
+                else if (actual == "hello world") helloWorldCount++;
+                else if (actual == "hello southport") helloSouthportCount++;
+                else Assert.Fail(actual);
+            }
+
+            Assert.IsTrue(helloCount > 10, "helloCount");
+            Assert.IsTrue(helloWorldCount > 10, "helloWorldCount");
+            Assert.IsTrue(helloSouthportCount > 10, "helloSouthportCount");
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(InputException))]
         public void FullyRecursiveGrammarFinishesProcessing()
         {
-            var core = new Core();
+            var core = new PaprikaEngine();
             string grammarString = @"
 * recursion
 ooh [recursion]

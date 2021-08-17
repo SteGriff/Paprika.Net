@@ -58,7 +58,7 @@
   <ItemGroup>
     <Compile Include="AnAndATests.cs" />
     <Compile Include="CoreTests.cs" />
-    <Compile Include="CountingTests.cs" />
+    <Compile Include="IntegrationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

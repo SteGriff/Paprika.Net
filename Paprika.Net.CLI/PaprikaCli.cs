@@ -7,11 +7,10 @@ namespace Paprika.Net.CLI
 {
     public class PaprikaCli
     {
-        private Core engine = new Core();
+        private PaprikaEngine engine = new PaprikaEngine();
         private RunModes mode = RunModes.WorkingDirectory;
         private string grammarSource = "";
         private string prompt = "";
-        private bool count = false;
 
         public void Run()
         {
@@ -21,20 +20,20 @@ namespace Paprika.Net.CLI
 
             while (true)
             {
-                //Display prompt and get input
+                // Display prompt and get input
                 Console.Write(prompt);
                 string input = Console.ReadLine();
 
-                //Skip back to input if nothing was entered
-                if (String.IsNullOrWhiteSpace(input))
+                // Skip back to input if nothing was entered
+                if (string.IsNullOrWhiteSpace(input))
                 {
                     continue;
                 }
 
-                //Check for commands starting '//'
+                // Check for commands starting '//'
                 if (input.Length > 1 && input.Substring(0, 2) == "//")
                 {
-                    //Parameterise the commands after the slashes
+                    // Parameterise the commands after the slashes
                     var commands = input
                         .Replace("//", "")
                         .Split(new[] { ' ' });
@@ -59,12 +58,6 @@ namespace Paprika.Net.CLI
                             LoadFromCommand(commands);
                             continue;
 
-                        case "count":
-                            count = !count;
-                            engine.CountingIsImportant = count;
-                            Console.WriteLine("Counting is now: {0}", count ? "on" : "off");
-                            continue;
-
                         case "validate":
                             Console.WriteLine("Reloading...");
                             Reload();
@@ -84,31 +77,22 @@ namespace Paprika.Net.CLI
                             continue;
 
                         case "login":
-                            Console.Write("Username: ");
-                            var username = Console.ReadLine();
-                            Console.Write("Password (key-presses hidden): ");
-                            var password = new PasswordHarvest().Harvest();
-
+                            //Console.Write("Username: ");
+                            //var username = Console.ReadLine();
+                            //Console.Write("Password (key-presses hidden): ");
+                            //var password = new PasswordHarvest().Harvest();
                             continue;
 
                         case "upload":
-
                             continue;
                     }
                 }
 
-                //Do the actual parsing
+                // Do the actual parsing
                 try
                 {
                     string output = engine.Parse(input);
                     Console.WriteLine(output);
-
-                    if (count)
-                    {
-                        var n = engine.NumberOfOptions();
-                        Console.WriteLine("Number of options considered was between {0} and {1}", n.LowerBound, n.UpperBound);
-                    }
-
                 }
                 catch (BracketResolutionException ex)
                 {
@@ -126,7 +110,7 @@ namespace Paprika.Net.CLI
             }
         }
 
-        private void TestGrammar(Core engine)
+        private void TestGrammar(PaprikaEngine engine)
         {
             var grammar = engine.Grammar;
             foreach (var g in grammar)
@@ -174,7 +158,7 @@ namespace Paprika.Net.CLI
 
         private void Reload()
         {
-            engine = new Core();
+            engine = new PaprikaEngine();
 
             try
             {
